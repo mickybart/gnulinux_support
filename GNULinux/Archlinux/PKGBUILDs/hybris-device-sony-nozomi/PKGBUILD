@@ -1,0 +1,142 @@
+# Maintainer: Michaël Serpieri <mickybart@pygoscelis.org>
+
+pkgname=hybris-device-sony-nozomi
+pkgver=5.1.1_30
+pkgrel=1
+pkgdesc="hybris - Android for Sony Xperia S (nozomi)"
+arch=('armv7h')
+url="http://forum.xda-developers.com/xperia-s/s-development/rom-naosprom-xperia-s-t2958516"
+license=('custom')
+provides=('hybris-device')
+depends=('schroot-android' 'systemd-legacy' 'hybris-linux-sony-nozomi')
+options=('!strip')
+install='hybris-device.install'
+source=(hybris-device.install
+	generate-android-udev-rules.sh
+        generate-android-users.sh
+	hybris-device.install.template
+        default.hybris-device
+	schroot-root.profile
+	profile.hybris-device.sh
+	hybris-device.tgz)
+md5sums=('SKIP'
+	 'b128af77ca5d2e1c8eeda192baa7b298'
+	 'abf104cdf8a37a1d3809409666ef29ea'
+	 '6941b530a50e75056cff4dcb3aa3b72e'
+	 '0ceae2ceb73ffcc93e9d215c91e2f131'
+	 'e92adca56938bebe580a59f8106290d3'
+	 'db30eaf717ffd9501123548806e86513'
+	 'SKIP')
+product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
+
+build() {
+  cd "${srcdir}"
+
+  # Generate udev rules source files
+
+  sh generate-android-udev-rules.sh ./${product_out}/root
+
+  # Generate groups and users creation based on ./headers
+  # and create the future .INSTALL of the package
+  #
+  # WARNING: before publishing the PKGBUILD sources,
+  #          take care to cleanup hybris-device.install
+  #          with '> hybris-device.install'
+  #
+  # NOTE: some users are specific per device and android version
+  #       so for now we handle EVERY users creation in hybris-device
+  #       as part of the portage effort
+
+  sh generate-android-users.sh ./${product_out} > hybris-device.install
+  cat hybris-device.install.template >> hybris-device.install
+}
+
+package() {
+  cd "${srcdir}"
+
+  # Android ramdisk (rootfs)
+  #
+
+  install -d "${pkgdir}/opt/android"
+  cp -a ./${product_out}/root "${pkgdir}/opt/android/rootfs"
+  chown -R root:root "${pkgdir}/opt/android/rootfs/"
+
+  # We don't want Android to manage fstab. If you need specific mount,
+  # you can manage them with systemd or schroot directly
+  for i in $(ls -1 "${pkgdir}/opt/android/rootfs/fstab*"); do
+    > $i
+  done
+
+  # Android system
+  #
+
+  rm -rf "${pkgdir}/opt/android/system"
+  cp -a ./${product_out}/system "${pkgdir}/opt/android/system"
+  chown -R root:root "${pkgdir}/opt/android/system/"
+
+  # Android /data
+  #
+  install -d "${pkgdir}/home"
+  install -d -m 771 -g 1000 -o 1000 "${pkgdir}/home/android"
+
+  # Android integration (needed for libhybris / proprietary lib)
+  #
+  ln -s /opt/android/system "${pkgdir}/system"
+  ln -s /opt/android/system/vendor "${pkgdir}/vendor"
+
+  # Android firmware files
+  #
+  # NOTE: 'systemd-legacy' needed for userspace firmware loading.
+  #       If you don't need to load firmware from userspace,
+  #       you can switch dependency to 'systemd'
+
+  install -d "${pkgdir}/usr/lib/firmware/"
+  cp -r "${pkgdir}"/opt/android/system/etc/firmware/* "${pkgdir}/usr/lib/firmware/"
+  cp -r "${pkgdir}"/opt/android/system/vendor/firmware/* "${pkgdir}/usr/lib/firmware/"
+
+  # Android headers
+  #
+  # NOTE: needed to compil libhybris-git, qpa-qt-hwcomposer-plugin, ...
+
+  cd "$srcdir/${product_out}/headers"
+  make DESTDIR="$pkgdir/" PREFIX=/opt/android INCLUDEDIR=/opt/android/include install
+  cd "${srcdir}"
+  install -d "${pkgdir}/usr/lib/pkgconfig"
+  mv "${pkgdir}/opt/android/include/android-headers.pc" "${pkgdir}/usr/lib/pkgconfig/"
+  sed -i 's|Cflags:.*|Cflags: -I/opt/android/include|' "${pkgdir}/usr/lib/pkgconfig/android-headers.pc"
+
+  # udev rules for the device
+  #
+  # NOTE: review generated rules and patch them here if needed.
+  #       Thanks to report your changes to permit us
+  #       to fix generate-android-udev-rules.sh script
+
+  install -d "${pkgdir}/usr/lib/udev/rules.d/"
+  cp *.rules "${pkgdir}/usr/lib/udev/rules.d/"
+
+  # Configuration file
+  #
+  # NOTE: permit to set variables used to configure
+  #       backend, screen parameters, etc for external components
+
+  install -d "${pkgdir}/etc/default"
+  install -m 644 default.hybris-device "${pkgdir}/etc/default/hybris-device"
+
+  install -d "${pkgdir}/etc/profile.d"
+  install -m 755 profile.hybris-device.sh "${pkgdir}/etc/profile.d/hybris-device.sh"
+
+  # schroot environment
+  #
+  # NOTE: default configuration should be good but
+  #       just in case, we prefer to handle it on this package
+  #       if adaptation is needed about mount, shell etc
+
+  install -d "${pkgdir}/etc"
+  cp -r /usr/share/schroot/examples/android "${pkgdir}/etc/schroot"
+
+  # profile for root user into the schroot environment
+  install -d "${pkgdir}/opt/android/rootfs/root"
+  install -m 644 schroot-root.profile "${pkgdir}/opt/android/rootfs/root/.profile"
+
+}
+

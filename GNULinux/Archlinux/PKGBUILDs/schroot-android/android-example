@@ -1,0 +1,9 @@
+[android]
+description=Android
+type=directory
+directory=/opt/android/rootfs
+groups=users
+root-groups=root
+profile=android
+shell=/system/xbin/sh
+preserve-environment=false

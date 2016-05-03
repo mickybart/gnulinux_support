@@ -1,0 +1,55 @@
+# Maintainer: Michael Serpieri <mickybart@pygoscelis.org>
+
+pkgname=libhybris-git
+_pkgname=libhybris
+pkgver=767.342b9c5
+pkgrel=4
+pkgdesc="hybris allows to use bionic-based HW adaptations in glibc systems"
+arch=('armv7h')
+url="https://github.com/libhybris/libhybris"
+license=('Apache')
+depends=('hybris-device')
+makedepends=()
+provides=('libhybris')
+conflicts=('libhybris')
+source=("libhybris::git+https://github.com/libhybris/libhybris"
+        'compat-libhybris.patch')
+md5sums=('SKIP'
+         '8b968bc9ebef046c7ccde3f2968a6065')
+
+pkgver() {
+  cd "${srcdir}/${_pkgname}"
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+prepare() {
+  cd "${_pkgname}"
+
+  # bring back compat and test_sf/test_ui binaries
+  git revert -n a28a3e566e8605d46295967399fffefbb8b4aaaa
+
+  # compat: apply patch from https://github.com/mickybart/libhybris
+  git apply "${srcdir}/compat-libhybris.patch"
+}
+
+build() {
+  cd "${srcdir}/${_pkgname}/hybris"
+
+  ./autogen.sh \
+    --prefix=/opt/android/hybris \
+    --with-android-headers=/opt/android/include
+  make
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}/hybris"
+
+  # lib dependency issue: workaround with -j1
+  make -j1 DESTDIR="${pkgdir}" install
+
+  #Some conflict with mesa-libgl
+  ## move pkgconfig to standard path
+  #install -d "${pkgdir}/usr/lib/"
+  #mv "${pkgdir}/opt/android/hybris/lib/pkgconfig" "${pkgdir}/usr/lib/" 
+}
+

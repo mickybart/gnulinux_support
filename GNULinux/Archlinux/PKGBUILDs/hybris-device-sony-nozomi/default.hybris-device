@@ -1,0 +1,61 @@
+####
+# Main configuration for Android Adapatation
+#
+# This file is used by multiple components linked with Android adaptation
+
+####
+# Qt QPA plugin for Android
+#
+# Permit to override automatic screen detection values from:
+#
+# - qt5-qpa-hwcomposer-plugin
+# - qt5-qpa-surfaceflinger-plugin
+# 
+
+# Screen physical width in mm (QT_QPA_EGLFS_WIDTH * 25.4 / DPI)
+#QT_QPA_EGLFS_PHYSICAL_WIDTH=57
+
+# Screen physical height in mm (QT_QPA_EGLFS_HEIGHT * 25.4 / DPI)
+#QT_QPA_EGLFS_PHYSICAL_HEIGHT=101
+
+# Screen width in px
+#QT_QPA_EGLFS_WIDTH=720
+
+# Screen height in px
+#QT_QPA_EGLFS_HEIGHT=1280
+
+# Screen depth in bit (16 for RGB565 or 32 for RGBA)
+#QT_QPA_EGLFS_DEPTH=32
+
+# Screen refresh rate in hz (60.0 hz by default)
+#QT_QPA_EGLFS_REFRESH_RATE=60.0
+
+####
+# Qt QPA Platform
+#
+# hwcomposer:
+#   directly drive the driver to initialize and render to the display.
+#
+# surfaceflinger:
+#   client of SurfaceFlinger composer.
+#   systemd will start surfaceflinger service only in this case during boot
+#
+# NOTE: if you dynamically change this value,
+#       don't forget to start or stop surfaceflinger service
+
+QT_QPA_PLATFORM=surfaceflinger
+
+####
+# USB Configuration
+#
+# Information can be found into Android under /init.<hardware>.usb.rc file
+
+USB_IDVENDOR=0fce
+USB_IDPRODUCT=7169
+USB_IPRODUCT="Xperia S"
+USB_ISERIAL="CB511W1UFR"
+USB_IMANUFACTURER="Archlinux Phone"
+
+#Network interface used to set the ip (10.15.19.82) for tethering
+#(by default we will only try with usb0 or rndis0. see ip link)
+#USB_IFACE=

@@ -1,0 +1,41 @@
+
+####
+# post_install is used for a New installation
+# see https://wiki.archlinux.org/index.php/PKGBUILD#install
+
+post_install(){
+	# let's go to run the generated _post_install
+	# see generate-android-users.sh
+	_post_install $1
+}
+
+####
+# post upgrade is used for an upgrade
+# see https://wiki.archlinux.org/index.php/PKGBUILD#install
+
+post_upgrade(){
+	NEW_VERSION=$1
+	OLD_VERSION=$2
+
+	# Delete users:
+	#
+	#  if between 2 packages version you don't need some previous users,
+	#  you will need to delete them here
+	#
+	# IMPORTANT: be careful to don't delete a system user/group
+
+	#userdel... groupdel... (don't forget to delete the main group of the user)
+
+	# Modify users:
+	#
+	#  Same than delete. Please handle users/groups change here
+	#
+	# IMPORTANT: be careful to don't modify a system user/group
+
+	#usermod... groupmod...
+
+	# Now let's go to run the generated _post_upgrade
+	# see generate-android-users.sh
+	_post_upgrade $NEW_VERSION $OLD_VERSION 
+}
+

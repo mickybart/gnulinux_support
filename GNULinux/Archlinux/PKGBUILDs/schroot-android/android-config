@@ -1,0 +1,15 @@
+# Default settings for chroot setup and exec scripts.
+# See schroot-script-config(5) for further details.
+
+# Filesystems to mount inside the chroot.
+FSTAB="/etc/schroot/android/mount"
+
+# Files to copy from the host system into the chroot.
+COPYFILES="/etc/schroot/android/copyfiles"
+
+# System databases to copy into the chroot
+NSSDATABASES="/etc/schroot/android/nssdatabases"
+
+# System target for setup.d scripts knowledge
+SYSTEMTARGET=android
+

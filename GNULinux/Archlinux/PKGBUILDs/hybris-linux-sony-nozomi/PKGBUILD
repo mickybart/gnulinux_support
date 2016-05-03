@@ -1,0 +1,51 @@
+# Maintainer: Michaël Serpieri <mickybart@pygoscelis.org>
+
+pkgname=hybris-linux-sony-nozomi
+pkgver=5.1.1_30
+pkgrel=1
+pkgdesc="hybris - The Linux kernel for Sony Xperia S (nozomi)"
+arch=('armv7h')
+url="http://forum.xda-developers.com/xperia-s/s-development/rom-naosprom-xperia-s-t2958516"
+license=('custom')
+provides=('hybris-linux')
+depends=()
+options=('!strip')
+source=(hybris-linux.tgz)
+md5sums=('SKIP')
+product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
+
+build() {
+  cd "${srcdir}"
+
+}
+
+package() {
+  cd "${srcdir}"
+
+  install -d ${pkgdir}/opt/android/boot
+  install -m 644 ./${product_out}/boot.img ${pkgdir}/opt/android/boot/
+
+  # fix kernel error due to v4l_id
+  install -d "${pkgdir}/etc/udev/rules.d/"
+  cat << EOF > "${pkgdir}/etc/udev/rules.d/60-persistent-v4l.rules"
+####
+# Owner: hybris-linux package
+#
+# Override /usr/lib/udev/rules.d/60-persistent-v4l.rules
+# to avoid kernel errors reported with v4l_id
+EOF
+
+  # TODO:
+  # - provide a script to flash the boot.img
+  # - .install to handle flash procedure (or not depending user choice ?)
+  # - take care of recovery.img here or on another package
+  # - support mkinitcpio with specific hook for Android boot.img structure
+  #     => kernel source ? (some devices use hardcoded CMDLINE into kernel .config file)
+  #     => provide mkbootimg or platform specific mkboot (boot.img are not all compliant with default Android boot structure)
+  # - what about multirom and kexec hard reboot support ?
+  #
+  # NOTE: mkinitcpio hook support (like crypto, btrfs,...) + multirom support (like a grub2)
+  #       will probably need a new recovery project or TWRP adaptation (to be study)
+
+}
+

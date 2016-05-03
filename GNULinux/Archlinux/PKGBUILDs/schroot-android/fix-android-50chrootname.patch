@@ -1,0 +1,9 @@
+@@ -23,6 +23,8 @@
+ . "$SETUP_DATA_DIR/common-functions"
+ . "$SETUP_DATA_DIR/common-config"
+ 
++[ "$SYSTEMTARGET" == "android" ] && exit 0
++
+ if [ $STAGE = "setup-start" ] || [ $STAGE = "setup-recover" ]; then
+ 
+     info "Setting chroot name to ${CHROOT_NAME}"
