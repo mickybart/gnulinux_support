@@ -15,7 +15,7 @@ conflicts=('libhybris')
 source=("libhybris::git+https://github.com/libhybris/libhybris"
         'compat-libhybris.patch')
 md5sums=('SKIP'
-         '8b968bc9ebef046c7ccde3f2968a6065')
+         'c33d183f69966286e9ff8b951ee73161')
 
 pkgver() {
   cd "${srcdir}/${_pkgname}"
@@ -37,7 +37,8 @@ build() {
 
   ./autogen.sh \
     --prefix=/opt/android/hybris \
-    --with-android-headers=/opt/android/include
+    --with-android-headers=/opt/android/include \
+    --enable-wayland
   make
 }
 
