@@ -30,7 +30,6 @@ prepare() {
 build() {
   cd build
 
-  export PKG_CONFIG_PATH=/opt/android/hybris/lib/pkgconfig
   cmake ../${_pkgname} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
