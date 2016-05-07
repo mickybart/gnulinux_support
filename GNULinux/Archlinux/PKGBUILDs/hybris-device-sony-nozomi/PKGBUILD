@@ -1,5 +1,12 @@
 # Maintainer: Michaël Serpieri <mickybart@pygoscelis.org>
 
+# Remarks about /home rule violation (see https://wiki.archlinux.org/index.php/Arch_packaging_standards#Directories)
+#
+# Android needs to generate a lot of files under /data that will be untracked.
+# /data is used for large purpose included media files of the user.
+# So /data should fit better under /home than /opt/android/rootfs/data
+# We absolutely need to be sure that /home/android is owned by us to don't break anything
+
 pkgname=hybris-device-sony-nozomi
 pkgver=5.1.1_30
 pkgrel=1
@@ -21,8 +28,8 @@ source=(hybris-device.install
 md5sums=('SKIP'
 	 'b128af77ca5d2e1c8eeda192baa7b298'
 	 'abf104cdf8a37a1d3809409666ef29ea'
-	 '6941b530a50e75056cff4dcb3aa3b72e'
-	 '0ceae2ceb73ffcc93e9d215c91e2f131'
+	 '69e168c70e61e19fbf86217fa691c084'
+	 'f46bb91acfc89b62c44c6cabade0eadc'
 	 'db30eaf717ffd9501123548806e86513'
 	 'SKIP')
 product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
@@ -61,8 +68,8 @@ package() {
 
   # We don't want Android to manage fstab. If you need specific mount,
   # you can manage them with systemd or schroot directly
-  for i in $(ls -1 "${pkgdir}/opt/android/rootfs/fstab*"); do
-    > $i
+  for i in $(ls -1 ${pkgdir}/opt/android/rootfs/fstab*); do
+    cat /dev/null > $i
   done
 
   # Android system

@@ -46,6 +46,22 @@
 QT_QPA_PLATFORM=surfaceflinger
 
 ####
+# Kwin Wayland
+#
+
+# Backend auto-detection based on environment variables
+if [ "$QT_QPA_PLATFORM" == "surfaceflinger" ]; then
+    # Kwin will use SurfaceFlinger backend
+    SURFACEFLINGER_DISPLAY=0
+else
+    # Kwin will use Hwcomposer backend
+    ANDROID_ROOT=/system
+fi
+
+# Kwin Compose (O2ES for Opengl ES 2.0)
+KWIN_COMPOSE=O2ES
+
+####
 # USB Configuration
 #
 # Information can be found into Android under /init.<hardware>.usb.rc file

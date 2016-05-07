@@ -39,3 +39,11 @@ post_upgrade(){
 	_post_upgrade $NEW_VERSION $OLD_VERSION 
 }
 
+####
+# post remove
+# see https://wiki.archlinux.org/index.php/PKGBUILD#install
+
+post_remove(){
+	printf '==> Android should have created untracked files under /opt/android/rootfs. Please check to manually clean them.\n'
+	printf '    The same situation occurs for /home/android (equivalent to /data under Android)\n'
+}
