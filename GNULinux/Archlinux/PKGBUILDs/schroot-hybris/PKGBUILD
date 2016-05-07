@@ -3,7 +3,7 @@
 # Contributor: Andreas Wagner <Andreas dot Wagner at em dot uni-frankfurt dot de>
 # Contributor: Michael Serpieri <mickybart@pygoscelis.org>
 
-pkgname=schroot-android
+pkgname=schroot-hybris
 _pkgname=schroot
 pkgver=1.6.10
 pkgrel=10
@@ -14,9 +14,9 @@ depends=('pam' 'lockdev' 'boost-libs' 'e2fsprogs')
 makedepends=('boost' 'cppunit')
 optdepends=('btrfs-progs-unstable' 'lvm2')
 arch=('i686' 'x86_64' 'armv7h')
-conflicts=('dchroot' 'schroot')
-replaces=('dchroot' 'schroot')
-provides=('schroot' 'sbuild' 'dchroot')
+conflicts=('dchroot' 'schroot' 'schroot-android')
+replaces=('dchroot' 'schroot' 'schroot-android')
+provides=('schroot' 'sbuild' 'dchroot' 'schroot-android')
 backup=('etc/schroot/schroot.conf'
 	'etc/schroot/arch32/config'
 	'etc/schroot/arch32/copyfiles'
@@ -31,7 +31,7 @@ source=("http://ftp.debian.org/debian/pool/main/s/$_pkgname/${_pkgname}_${pkgver
 	'arch32-nssdatabases'
 	'pam.d.schroot.patch'
 	'fix-bash-completion.patch'
-	'fix-android-50chrootname.patch'
+	'android-environment-schroot.patch'
 	'android-example'
 	'android-config'
 	'android-copyfiles'
@@ -46,8 +46,8 @@ md5sums=('f8ec667831487f4b12e094bc0dc9bbe3'
          'af1da6edd8c8c0dafeeb2c2c4e0c840b'
          'a8d77cac806a0a9adef3f93cdbeb280a'
          '5ba775d4f401e2c167414caa548b71e5'
-	 '0618745f862e6e3619208d5b7ea4e237'
-	 'b398e96c084ae5a54b3c74b063bc766f'
+	 'SKIP'
+	 '1d682606f01bfa75f0499bed0580816f'
 	 '3c9e0f7ccc86004fb7af4493ed3c7c43'
 	 'd41d8cd98f00b204e9800998ecf8427e'
 	 '341f762a2e779027f61aefeef20bd7c7'
@@ -59,6 +59,7 @@ prepare() {
 	cat $srcdir/debian/patches/series | while read p; do
 		patch -p1 -i $srcdir/debian/patches/$p
 	done
+	patch -p1 -i ${srcdir}/android-environment-schroot.patch
 	./bootstrap
 }
 
@@ -96,7 +97,6 @@ package() {
 	install -m 644 ${srcdir}/arch32-example ${pkgdir}/etc/schroot/chroot.d/arch32.conf.example
 	patch -i ${srcdir}/pam.d.schroot.patch ${pkgdir}/etc/pam.d/schroot
 
-	patch -i ${srcdir}/fix-android-50chrootname.patch ${pkgdir}/etc/schroot/setup.d/50chrootname
 	install -dm 755 ${pkgdir}/usr/share/schroot/examples/android/
 	install -dm 755 ${pkgdir}/usr/share/schroot/examples/android/android
 	install -dm 755 ${pkgdir}/usr/share/schroot/examples/android/chroot.d

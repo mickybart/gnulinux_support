@@ -8,7 +8,7 @@ arch=('armv7h')
 url="http://forum.xda-developers.com/xperia-s/s-development/rom-naosprom-xperia-s-t2958516"
 license=('custom')
 provides=('hybris-device')
-depends=('schroot-android' 'systemd-legacy' 'hybris-linux-sony-nozomi')
+depends=('schroot-hybris' 'systemd-legacy' 'hybris-linux-sony-nozomi')
 options=('!strip')
 install='hybris-device.install'
 source=(hybris-device.install
@@ -16,7 +16,6 @@ source=(hybris-device.install
         generate-android-users.sh
 	hybris-device.install.template
         default.hybris-device
-	schroot-root.profile
 	profile.hybris-device.sh
 	hybris-device.tgz)
 md5sums=('SKIP'
@@ -24,7 +23,6 @@ md5sums=('SKIP'
 	 'abf104cdf8a37a1d3809409666ef29ea'
 	 '6941b530a50e75056cff4dcb3aa3b72e'
 	 '0ceae2ceb73ffcc93e9d215c91e2f131'
-	 'e92adca56938bebe580a59f8106290d3'
 	 'db30eaf717ffd9501123548806e86513'
 	 'SKIP')
 product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
@@ -133,10 +131,6 @@ package() {
 
   install -d "${pkgdir}/etc"
   cp -r /usr/share/schroot/examples/android "${pkgdir}/etc/schroot"
-
-  # profile for root user into the schroot environment
-  install -d "${pkgdir}/opt/android/rootfs/root"
-  install -m 644 schroot-root.profile "${pkgdir}/opt/android/rootfs/root/.profile"
 
 }
 

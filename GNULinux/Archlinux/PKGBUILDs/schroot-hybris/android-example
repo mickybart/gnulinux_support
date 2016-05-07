@@ -7,3 +7,4 @@ root-groups=root
 profile=android
 shell=/system/xbin/sh
 preserve-environment=false
+android-environment=true
