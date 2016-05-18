@@ -1,0 +1,88 @@
+#!/bin/bash
+
+SCHROOT_SESSION_PATH=/var/lib/schroot/session
+SCHROOT_DROID_SESSION_PATH=/run/schroot-droid/session
+SCHROOT_ANDROID_CONFIG=android
+SCHROOT_ANDROID_NAME=droid
+CGROUP=systemd/system.slice/hybris-ready.service
+
+# functions
+#
+usage (){
+        cat << EOF
+Usage for $0 : $0 [-h|--help] [-e] [cmd [arg1] [arg2] [argn]]
+
+-h|--help :
+        Display this help
+
+-e:
+        Stop the android session
+
+cmd [arg1] [arg2] [argn]:
+        Command that will be run into the android chroot. You can specify all arguments that you need after the command.
+
+without argument:
+        Run into the android chroot.
+
+EOF
+}
+
+die () { echo "ERROR: ${1-UNKNOWN}"; exit 1; }
+
+# Usage request ?
+#
+if [ ! -z "$1" ] && ([ "x$1" == "x-h" ] || [ "x$1" == "x--help" ]); then
+        usage
+        exit 1
+fi
+
+# CGROUP
+# If the cgroup exit, we want to move this bash script on it.
+# By default the cgroup is the one that should be associated by systemd to hybris-ready.service (hybris-ready package)
+# That will permit us and systemd to track all android processes when it will be time to stop the service.
+if [ -f /sys/fs/cgroup/$CGROUP/tasks ]; then
+	echo $$ > /sys/fs/cgroup/$CGROUP/tasks
+fi
+
+# End session request ?
+#
+if [ ! -z "$1" ] && [ "x$1" == "x-e" ]; then
+        [ -f $SCHROOT_DROID_SESSION_PATH ] && source $SCHROOT_DROID_SESSION_PATH
+        if [ ! -z "$SCHROOT_ANDROID_ID" ]; then
+                schroot -e -c $SCHROOT_ANDROID_ID || die "Not able to end the session!"
+		rm -f $SCHROOT_DROID_SESSION_PATH || die "Failed to delete the session file ($SCHROOT_DROID_SESSION_PATH) !"
+        fi
+        exit 0
+fi
+
+# Start the session if need or recover the session id
+#
+if [ -f $SCHROOT_DROID_SESSION_PATH ]; then
+        # The session is already started so we just need to get the ID
+        source $SCHROOT_DROID_SESSION_PATH
+else
+        # The session is not started. Let's go to do it.
+
+        # sometime it is possible that the session is not cleaned correctly so we will remove it if needed
+        if [ -f "${SCHROOT_SESSION_PATH}/${SCHROOT_ANDROID_NAME}" ]; then
+                rm -rf "${SCHROOT_SESSION_PATH}/${SCHROOT_ANDROID_NAME}" || die "Not able to remove the old session under ${SCHROOT_SESSION_PATH}/${SCHROOT_ANDROID_NAME}"
+        fi
+
+        # We now ready to start the schroot
+        SCHROOT_ANDROID_ID=$(schroot -b -c $SCHROOT_ANDROID_CONFIG -n $SCHROOT_ANDROID_NAME)
+        [ -z "$SCHROOT_ANDROID_ID" ] && die "schroot failed to start Android (config: $SCHROOT_ANDROID_CONFIG, name: $SCHROOT_ANDROID_NAME)"
+
+        # Update the session file with the id
+        echo "SCHROOT_ANDROID_ID=$SCHROOT_ANDROID_ID" > $SCHROOT_DROID_SESSION_PATH
+fi
+
+# User action
+#
+if [ -z "$1" ]; then
+        # No argument so we run into the android chroot
+        schroot -r -c $SCHROOT_ANDROID_ID
+else
+        # Run the command with all args into the schroot
+        schroot -r -c $SCHROOT_ANDROID_ID -- $@
+fi
+

@@ -1,28 +1,17 @@
 # $Id: PKGBUILD 165989 2016-03-10 18:49:59Z spupykin $
-# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Michael Serpieri <mickybart@pygoscelis.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
 # Contributor: Andreas Wagner <Andreas dot Wagner at em dot uni-frankfurt dot de>
-# Contributor: Michael Serpieri <mickybart@pygoscelis.org>
 
-pkgname=schroot-hybris
-_pkgname=schroot
+pkgbase=schroot-hybris
+_pkgbase=schroot
+pkgname=('schroot-hybris' 'schroot-droid')
 pkgver=1.6.10
-pkgrel=10
-pkgdesc="Allows users to execute shell commands under different root filesystems. (Successor to dchroot)."
+pkgrel=11
 url="http://packages.qa.debian.org/s/schroot.html"
 license=('GPL3')
-depends=('pam' 'lockdev' 'boost-libs' 'e2fsprogs')
-makedepends=('boost' 'cppunit')
-optdepends=('btrfs-progs-unstable' 'lvm2')
 arch=('i686' 'x86_64' 'armv7h')
-conflicts=('dchroot' 'schroot' 'schroot-android')
-replaces=('dchroot' 'schroot' 'schroot-android')
-provides=('schroot' 'sbuild' 'dchroot' 'schroot-android')
-backup=('etc/schroot/schroot.conf'
-	'etc/schroot/arch32/config'
-	'etc/schroot/arch32/copyfiles'
-	'etc/schroot/arch32/mount'
-	'etc/schroot/arch32/nssdatabases')
-source=("http://ftp.debian.org/debian/pool/main/s/$_pkgname/${_pkgname}_${pkgver}.orig.tar.xz"
+source=("http://ftp.debian.org/debian/pool/main/s/$_pkgbase/${_pkgbase}_${pkgver}.orig.tar.xz"
 	"http://http.debian.net/debian/pool/main/s/schroot/schroot_$pkgver-2.debian.tar.xz"
 	'arch32-example'
 	'arch32-config'
@@ -36,7 +25,9 @@ source=("http://ftp.debian.org/debian/pool/main/s/$_pkgname/${_pkgname}_${pkgver
 	'android-config'
 	'android-copyfiles'
 	'android-mount'
-	'android-nssdatabases')
+	'android-nssdatabases'
+	'tmpfiles.d.schroot-droid.conf'
+	'sdroid')
 md5sums=('f8ec667831487f4b12e094bc0dc9bbe3'
          '44c9913952e62738e244dda412f3d819'
          '54239847f89b9a4772910415bde6276a'
@@ -46,15 +37,17 @@ md5sums=('f8ec667831487f4b12e094bc0dc9bbe3'
          'af1da6edd8c8c0dafeeb2c2c4e0c840b'
          'a8d77cac806a0a9adef3f93cdbeb280a'
          '5ba775d4f401e2c167414caa548b71e5'
-	 'SKIP'
+	 '532a4f1abdb479ba569cc7e23e53d69c'
 	 '1d682606f01bfa75f0499bed0580816f'
 	 '3c9e0f7ccc86004fb7af4493ed3c7c43'
 	 'd41d8cd98f00b204e9800998ecf8427e'
 	 '341f762a2e779027f61aefeef20bd7c7'
-	 'd41d8cd98f00b204e9800998ecf8427e')
+	 'd41d8cd98f00b204e9800998ecf8427e'
+	 '414b87a65c28a4bef30eedd74310a823'
+	 'ca57770c75237a064bbf56fcb3d2e282')
 
 prepare() {
-	cd ${_pkgname}-${pkgver}
+	cd ${_pkgbase}-${pkgver}
 	patch -p1 -i ${srcdir}/fix-bash-completion.patch
 	cat $srcdir/debian/patches/series | while read p; do
 		patch -p1 -i $srcdir/debian/patches/$p
@@ -64,7 +57,7 @@ prepare() {
 }
 
 build() {
-	cd ${_pkgname}-${pkgver}
+	cd ${_pkgbase}-${pkgver}
 	export LDFLAGS="${LDFLAGS//-Wl,--as-needed}"
 	./configure \
 		--prefix=/usr \
@@ -84,12 +77,25 @@ build() {
 }
 
 check() {
-	cd ${_pkgname}-${pkgver}
+	cd ${_pkgbase}-${pkgver}
 #	make -k check
 }
 
-package() {
-	cd ${_pkgname}-${pkgver}
+package_schroot-hybris() {
+	pkgdesc="Allows users to execute shell commands under different root filesystems. (Successor to dchroot)."
+	depends=('pam' 'lockdev' 'boost-libs' 'e2fsprogs')
+	makedepends=('boost' 'cppunit')
+	optdepends=('btrfs-progs-unstable' 'lvm2')
+	conflicts=('dchroot' 'schroot' 'schroot-android')
+	replaces=('dchroot' 'schroot' 'schroot-android')
+	provides=('schroot' 'sbuild' 'dchroot' 'schroot-android')
+	backup=('etc/schroot/schroot.conf'
+		'etc/schroot/arch32/config'
+		'etc/schroot/arch32/copyfiles'
+		'etc/schroot/arch32/mount'
+		'etc/schroot/arch32/nssdatabases')
+
+	cd ${_pkgbase}-${pkgver}
 	make DESTDIR=$pkgdir install
 	install -dm 755 ${pkgdir}/etc/schroot/arch32
 	install -m 644 ${srcdir}/arch32-{config,mount,copyfiles,nssdatabases} ${pkgdir}/etc/schroot/arch32
@@ -103,4 +109,16 @@ package() {
 	install -m 644 ${srcdir}/android-example ${pkgdir}/usr/share/schroot/examples/android/chroot.d/android.conf
 	install -m 644 ${srcdir}/android-{config,mount,copyfiles,nssdatabases} ${pkgdir}/usr/share/schroot/examples/android/android
 	rename 'android-' '' ${pkgdir}/usr/share/schroot/examples/android/android/*
+}
+
+package_schroot-droid() {
+	pkgdesc="Allow user to interact with Android chroot easily"
+	depends=('schroot-hybris')
+
+	install -d ${pkgdir}/usr/bin
+	install -m 755 ${srcdir}/sdroid ${pkgdir}/usr/bin/
+
+	install -d ${pkgdir}/usr/lib/tmpfiles.d/
+	install -m 644 ${srcdir}/tmpfiles.d.schroot-droid.conf ${pkgdir}/usr/lib/tmpfiles.d/schroot-droid.conf
+
 }

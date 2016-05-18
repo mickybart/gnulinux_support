@@ -30,16 +30,16 @@ md5sums=('SKIP'
 	 'abf104cdf8a37a1d3809409666ef29ea'
 	 '69e168c70e61e19fbf86217fa691c084'
 	 'f46bb91acfc89b62c44c6cabade0eadc'
-	 'db30eaf717ffd9501123548806e86513'
+	 '75e4bba978030127135ac0bff97960a1'
 	 'SKIP')
-product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
+_product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
 
 build() {
   cd "${srcdir}"
 
   # Generate udev rules source files
 
-  sh generate-android-udev-rules.sh ./${product_out}/root
+  sh generate-android-udev-rules.sh ./${_product_out}/root
 
   # Generate groups and users creation based on ./headers
   # and create the future .INSTALL of the package
@@ -52,7 +52,7 @@ build() {
   #       so for now we handle EVERY users creation in hybris-device
   #       as part of the portage effort
 
-  sh generate-android-users.sh ./${product_out} > hybris-device.install
+  sh generate-android-users.sh ./${_product_out} > hybris-device.install
   cat hybris-device.install.template >> hybris-device.install
 }
 
@@ -63,20 +63,14 @@ package() {
   #
 
   install -d "${pkgdir}/opt/android"
-  cp -a ./${product_out}/root "${pkgdir}/opt/android/rootfs"
+  cp -a ./${_product_out}/root "${pkgdir}/opt/android/rootfs"
   chown -R root:root "${pkgdir}/opt/android/rootfs/"
-
-  # We don't want Android to manage fstab. If you need specific mount,
-  # you can manage them with systemd or schroot directly
-  for i in $(ls -1 ${pkgdir}/opt/android/rootfs/fstab*); do
-    cat /dev/null > $i
-  done
 
   # Android system
   #
 
   rm -rf "${pkgdir}/opt/android/system"
-  cp -a ./${product_out}/system "${pkgdir}/opt/android/system"
+  cp -a ./${_product_out}/system "${pkgdir}/opt/android/system"
   chown -R root:root "${pkgdir}/opt/android/system/"
 
   # Android /data
@@ -103,7 +97,7 @@ package() {
   #
   # NOTE: needed to compil libhybris-git, qpa-qt-hwcomposer-plugin, ...
 
-  cd "$srcdir/${product_out}/headers"
+  cd "$srcdir/${_product_out}/headers"
   make DESTDIR="$pkgdir/" PREFIX=/opt/android INCLUDEDIR=/opt/android/include install
   cd "${srcdir}"
   install -d "${pkgdir}/usr/lib/pkgconfig"

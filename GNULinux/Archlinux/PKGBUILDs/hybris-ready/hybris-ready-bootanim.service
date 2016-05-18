@@ -1,0 +1,14 @@
+# systemd service file for bootanim
+
+[Unit]
+Description=Boot Animation for hybris
+After=hybris-ready.service
+Before=basic.target hybris-ready-completed.service
+Conflicts=shutdown.target
+DefaultDependencies=no
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/hybris-device
+ExecStart=/usr/bin/qmlscene-qt5 /usr/share/hybris-ready-bootanim/active.qml
+

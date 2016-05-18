@@ -1,0 +1,13 @@
+# systemd service file for hybris-ready
+
+[Unit]
+Description=Hybris system boot completed (just before graphical.target)
+Requires=multi-user.target
+Conflicts=rescue.service rescue.target
+After=multi-user.target rescue.service rescue.target
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/android-init start-final
+

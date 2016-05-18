@@ -50,13 +50,10 @@ QT_QPA_PLATFORM=surfaceflinger
 #
 
 # Backend auto-detection based on environment variables
-if [ "$QT_QPA_PLATFORM" == "surfaceflinger" ]; then
-    # Kwin will use SurfaceFlinger backend
-    SURFACEFLINGER_DISPLAY=0
-else
-    # Kwin will use Hwcomposer backend
-    ANDROID_ROOT=/system
-fi
+# uncomment line below to use Kwin SurfaceFlinger backend
+SURFACEFLINGER_DISPLAY=0
+# uncomment line below to use Kwin Hwcomposer backend
+#ANDROID_ROOT=/system
 
 # Kwin Compose (O2ES for Opengl ES 2.0)
 KWIN_COMPOSE=O2ES

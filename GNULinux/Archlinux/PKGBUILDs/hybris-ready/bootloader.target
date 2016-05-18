@@ -1,0 +1,14 @@
+#  This file is part of hybris-ready.
+
+[Unit]
+Description=Reboot into fastboot mode
+Documentation=man:systemd.special(7)
+DefaultDependencies=no
+Requires=hybris-reboot-bootloader.service
+After=hybris-reboot-bootloader.service
+AllowIsolate=yes
+JobTimeoutSec=30min
+JobTimeoutAction=reboot-force
+
+[Install]
+Alias=ctrl-alt-del.target

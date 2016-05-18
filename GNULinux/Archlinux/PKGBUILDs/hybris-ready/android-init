@@ -1,0 +1,122 @@
+#!/bin/bash
+
+ANDROIDINIT=/dev/.android-init-loading
+TIMEOUT=30
+
+# functions
+#
+
+# usage
+usage (){
+        cat << EOF
+Usage for $0 : $0 [-h|--help] start|start-final|stop [cgroup]
+
+-h|--help :
+        Display this help
+
+start:
+        Start Android (init)
+
+stop cgroup:
+	Stop Android. cgroup is the cgroup name used by Android (see systemd).
+
+start-final:
+	start final init stage for GNU/Linux (eg: stop surfaceflinger)
+
+EOF
+}
+
+# die
+die () { echo "ERROR: ${1-UNKNOWN}"; exit 1; }
+
+# start
+start (){
+
+	touch $ANDROIDINIT
+	sdroid /init &
+	inotifywait -q -t $TIMEOUT -e delete_self $ANDROIDINIT 2>&1 > /dev/null
+	RET=$?
+
+	#RET=1 means that the file has been deleted by Android init before we started inotifywait
+	if [ $RET -ne 0 ] && [ $RET -ne 1 ]; then
+		# Android init failed !
+
+		# Try to notify the user with a led notification if available
+		[ -f /etc/default/hybris-device ] && source /etc/default/hybris-device		
+		[ -n "$NOTIFICATION_RED_LEDS" ] && \
+		[ -f "$NOTIFICATION_RED_LEDS" ] && \
+		echo 255 > "$NOTIFICATION_RED_LEDS"
+
+		# exit with error
+		exit $RET
+	fi
+
+	exit 0
+}
+
+# stop
+stop (){
+	# kill friendly
+	# kill -9
+	# exit chroot
+
+	CGROUP=$1
+
+	if [ -z "$CGROUP" ] || [ ! -f /sys/fs/cgroup/systemd/$CGROUP/cgroup.procs ]; then
+		usage
+		exit 1
+	fi
+
+	# kill friendly
+	for i in $(cat /sys/fs/cgroup/systemd/$CGROUP/cgroup.procs); do
+		[ -d /proc/$i ] && kill -TERM $i
+	done
+
+	# TODO: Improve the waiting solution to a better tracking solution
+	sleep 4
+
+	# kill -9
+	for i in $(cat /sys/fs/cgroup/systemd/$CGROUP/cgroup.procs); do
+		[ -d /proc/$i ] && kill -KILL $i
+	done
+
+	# exit chroot
+	sdroid -e
+
+	exit $?
+}
+
+# start-final
+start-final (){
+	#systemctl stop hybris-ready-bootanim.service 2> /dev/null
+	[ -f /etc/default/hybris-device ] && source /etc/default/hybris-device
+	if [ "$QT_QPA_PLATFORM" != "surfaceflinger" ]; then
+		sdroid stop surfaceflinger
+	fi
+	exit 0
+}
+
+# Usage request ?
+#
+if [ ! -z "$1" ] && ([ "x$1" == "x-h" ] || [ "x$1" == "x--help" ]); then
+        usage
+        exit 1
+fi
+
+case "$1" in
+  "start")
+	start
+	;;
+  "stop")
+	stop $2
+	;;
+  "start-final")
+	start-final
+	;;
+  *)
+	usage
+	exit 1
+	;;
+esac
+
+

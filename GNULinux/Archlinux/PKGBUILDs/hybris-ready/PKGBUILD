@@ -1,0 +1,94 @@
+# Maintainer: Michael Serpieri <mickybart@pygoscelis.org>
+
+pkgbase=hybris-ready
+pkgname=('hybris-ready' 'hybris-ready-bootanim' 'hybris-ready-qt5-qpa-meta' 'hybris-ready-plasma-support-meta')
+pkgver=0.1
+pkgrel=1
+arch=('armv7h')
+url="https://github.com/mickybart/"
+license=('')
+makedepends=()
+source=('hybris-ready.install'
+	'android-init'
+	'hybris-ready.service'
+	'hybris-ready-completed.service'
+	'hybris-reboot-bootloader.service'
+	'hybris-reboot-recovery.service'
+	'recovery.target'
+	'bootloader.target'
+	'hybris-ready-bootanim.service'
+	'bootanimation.tgz')
+md5sums=('9c7d863fd54b8651fb016b40a11173fb'
+         '6b259e91039b491f8e5e2ed26704b228'
+         'bbbcaf2cd153e09113210805e0aeb67f'
+         'f33c47d02e240b027f4d19f7fffe27e1'
+         'a25bad0581c922ef06f5cb4fdfdabfc1'
+         '65b61017d16d236634871c02f259d1fb'
+         'c3934530b2cbc256893481b665735aef'
+         '5535cc3291d8639b587a5a71a1b24f32'
+         '5844adbaba2f0156f3762580982ee7a2'
+         'df3d50952fa8ed4355255ab00a9c6678')
+
+build() {
+  cd ${srcdir}
+
+}
+
+package_hybris-ready() {
+  pkgdesc="hybris ready permit to fully support GNU/Linux and Android Hardware"
+  depends=('hybris-device' 'hybris-usb'
+	   'libhybris-git' 'libhybris-libgl-git' 'libhybris-wayland-egl-git'
+	   'inotify-tools')
+  optdepends=('hybris-ready-bootanim: required to display a pretty boot animation')
+  install='hybris-ready.install'
+
+  cd ${srcdir}
+
+  # services for hybris-ready
+  install -d ${pkgdir}/usr/bin
+  install -m 755 android-init ${pkgdir}/usr/bin/
+
+  install -d ${pkgdir}/usr/lib/systemd/system/
+  install -m 644 hybris-ready.service ${pkgdir}/usr/lib/systemd/system/
+  install -m 644 hybris-ready-completed.service ${pkgdir}/usr/lib/systemd/system/
+
+  # special services and target for Android Hw
+  install -m 644 hybris-reboot-bootloader.service ${pkgdir}/usr/lib/systemd/system/
+  install -m 644 hybris-reboot-recovery.service ${pkgdir}/usr/lib/systemd/system/
+  install -m 644 bootloader.target ${pkgdir}/usr/lib/systemd/system/
+  install -m 644 recovery.target ${pkgdir}/usr/lib/systemd/system/
+
+}
+
+package_hybris-ready-bootanim() {
+  pkgdesc="Boot animation for hybris system"
+  depends=('hybris-ready'
+	   'hybris-ready-qt5-qpa-meta'
+	   'qt5-declarative' 'qt5-svg')
+
+  cd ${srcdir}
+
+  # share
+  install -d ${pkgdir}/usr/share/hybris-ready-bootanim/
+  cp -r ${srcdir}/bootanimation/* ${pkgdir}/usr/share/hybris-ready-bootanim/
+  ln -s archlinux.qml ${pkgdir}/usr/share/hybris-ready-bootanim/active.qml
+
+  # Boot Animation service
+  install -d ${pkgdir}/usr/lib/systemd/system/
+  install -m 644 hybris-ready-bootanim.service ${pkgdir}/usr/lib/systemd/system/
+
+}
+
+package_hybris-ready-qt5-qpa-meta() {
+  pkgdesc="Qt QPA Platform for hybris"
+  depends=('hybris-ready'
+	   'qt5-qpa-hwcomposer-plugin' 'qt5-qpa-surfaceflinger-plugin')
+
+}
+
+package_hybris-ready-plasma-support-meta() {
+  pkgdesc="plasma support for hybris system"
+  depends=('hybris-ready' 'qt5-wayland-compositor' 'kwin-hybris')
+
+}
+

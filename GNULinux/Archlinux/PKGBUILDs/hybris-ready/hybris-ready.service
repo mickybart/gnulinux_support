@@ -1,0 +1,21 @@
+# systemd service file for hybris-ready
+
+[Unit]
+Description=Android init
+Wants=hybris-ready-bootanim.service hybris-ready-completed.service
+After=sysinit.target
+Before=basic.target
+Conflicts=shutdown.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/android-init start
+ExecStop=/usr/bin/android-init stop %c
+RemainAfterExit=yes
+TimeoutSec=30
+StartLimitInterval=60
+StartLimitBurst=2
+
+[Install]
+WantedBy=basic.target

@@ -363,7 +363,7 @@ index bd61e7b..a358fb3 100644
  
  }
 diff --git a/sbuild/sbuild-session.cc b/sbuild/sbuild-session.cc
-index f12257d..779403f 100644
+index f12257d..a0a30c2 100644
 --- a/sbuild/sbuild-session.cc
 +++ b/sbuild/sbuild-session.cc
 @@ -213,6 +213,7 @@ session::session (std::string const&  service,
@@ -401,7 +401,7 @@ index f12257d..779403f 100644
 +    env.add("ANDROID_ROOT", "/system");
 +    env.add("LD_PRELOAD", "/system/lib/libc.so"); //for glibc-bionic compatibility
 +    env.add("LD_LIBRARY_PATH", "/system/lib:/vendor/lib");
-+    env.add("PATH", "/system/bin:/system/xbin");
++    env.add("PATH", "/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin");
 +    env.add("PS1", "(android)[\\u@\\h \\W]\\$ ");
 +    
 +    env.use_filter(true);

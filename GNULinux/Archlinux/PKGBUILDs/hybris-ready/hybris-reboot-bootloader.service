@@ -1,0 +1,12 @@
+#  This file is part of hybris-ready.
+
+[Unit]
+Description=Reboot into fastboot mode
+Documentation=man:systemd-halt.service(8)
+DefaultDependencies=no
+Requires=shutdown.target umount.target final.target
+After=shutdown.target umount.target final.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --force reboot bootloader

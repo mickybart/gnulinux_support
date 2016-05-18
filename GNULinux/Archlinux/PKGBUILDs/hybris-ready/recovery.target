@@ -1,0 +1,14 @@
+#  This file is part of hybris-ready.
+
+[Unit]
+Description=Reboot into recovery mode
+Documentation=man:systemd.special(7)
+DefaultDependencies=no
+Requires=hybris-reboot-recovery.service
+After=hybris-reboot-recovery.service
+AllowIsolate=yes
+JobTimeoutSec=30min
+JobTimeoutAction=reboot-force
+
+[Install]
+Alias=ctrl-alt-del.target
