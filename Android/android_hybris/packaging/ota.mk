@@ -1,12 +1,43 @@
+# -----------------------------------------------------------------
+# OTA hybris files for GNU/Linux
+#
+# hybris-device.tgz :
+#   Provide:
+#     /system
+#     root (boot ramdisk)
+#     headers (at least for libhybris compilation)
+#     boot.img (kernel + hyrbis ramdisk)
+#
+# hybris-linux.tgz :
+#   Provide:
+#     boot.img (with hybris ramdisk)
+
+.PHONY: hybris
+hybris: hybris-device hybris-linux
+
+hybris-device: $(DEFAULT_GOAL) $(BUILT_RAMDISK_TARGET)
+	$(call pretty,"Creating headers")
+	$(hide) rm -rf $(PRODUCT_OUT)/headers
+	$(hide) ./hybris/packaging/extract-headers.sh $(TOP) $(PRODUCT_OUT)/headers $(shell (echo $(PLATFORM_VERSION) | tr '.' ' '))
+	$(call pretty,"Creating package: $@.tgz")
+	$(hide) rm -f $(PRODUCT_OUT)/$@.tgz
+	$(hide) tar -czf $(PRODUCT_OUT)/$@.tgz $(PRODUCT_OUT)/system $(PRODUCT_OUT)/headers $(PRODUCT_OUT)/root
+	$(call pretty,"Package created: $@.tgz")
+
+hybris-linux: $(INSTALLED_BOOTIMAGE_TARGET)
+	$(call pretty,"Creating package: $@.tgz")
+	$(hide) rm -f $(PRODUCT_OUT)/$@.tgz
+	$(hide) tar -czf $(PRODUCT_OUT)/$@.tgz $(INSTALLED_BOOTIMAGE_TARGET)
+	$(call pretty,"Package created: $@.tgz")
 
 # -----------------------------------------------------------------
 # OTA Package for GNU/Linux
 
 ifeq ($(GNULINUX_OTA_OS),)
-  GNULINUX_OTA_OS := archlinux
+  $(error No GNULINUX_OTA_OS defined - eg: archlinux.)
 endif
 ifeq ($(GNULINUX_OTA_ARCH),)
-  GNULINUX_OTA_ARCH := armv7
+  $(error No GNULINUX_OTA_ARCH defined - eg: armv7)
 endif
 
 include ./hybris/packaging/$(GNULINUX_OTA_OS)/ota.mk
@@ -44,6 +75,4 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(DISTTOOLS) $(BUILT_TARGET_FILES_PACKAGE) $(GNU
 else
 include $(BOARD_CUSTOM_GNULINUX_OTA_MK)
 endif #BOARD_CUSTOM_GNULINUX_OTA_MK
-
-
 
