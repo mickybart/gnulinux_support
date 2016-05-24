@@ -1,0 +1,3 @@
+[submodule "GNULinux/kernel-check"]
+	path = GNULinux/kernel-check
+	url = https://github.com/mer-hybris/mer-kernel-check
