@@ -25,7 +25,7 @@
 #QT_QPA_EGLFS_HEIGHT=1280
 
 # Screen depth in bit (16 for RGB565 or 32 for RGBA)
-#QT_QPA_EGLFS_DEPTH=32
+QT_QPA_EGLFS_DEPTH=32
 
 # Screen refresh rate in hz (60.0 hz by default)
 #QT_QPA_EGLFS_REFRESH_RATE=60.0

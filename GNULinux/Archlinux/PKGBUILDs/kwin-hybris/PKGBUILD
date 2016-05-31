@@ -1,7 +1,7 @@
 # $Id: PKGBUILD 265462 2016-04-19 15:09:32Z arojas $
-# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Michael Serpieri <mickybart@pygoscelis.org>
+# Contributor: Felix Yan <felixonmars@archlinux.org>
 # Contributor: Andrea Scarpino <andrea@archlinux.org>
-# Contributor: Michael Serpieri <mickybart@pygoscelis.org>
 
 pkgname=kwin-hybris
 _pkgname=kwin
@@ -20,7 +20,7 @@ groups=('plasma')
 install=${_pkgname}.install
 provides=('kwin')
 conflicts=('kdebase-workspace' 'kwin')
-source=("${_pkgname}-${pkgver}.tgz")
+source=("kwin::git+https://github.com/mickybart/kwin#branch=sf-v${pkgver}")
 md5sums=('SKIP')
 
 prepare() {

@@ -29,7 +29,7 @@ md5sums=('SKIP'
 	 'b128af77ca5d2e1c8eeda192baa7b298'
 	 'abf104cdf8a37a1d3809409666ef29ea'
 	 '69e168c70e61e19fbf86217fa691c084'
-	 'f46bb91acfc89b62c44c6cabade0eadc'
+	 '96a74b7fef30065e22906e4a63fe91fa'
 	 '75e4bba978030127135ac0bff97960a1'
 	 'SKIP')
 _product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)

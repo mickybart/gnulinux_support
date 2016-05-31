@@ -88,8 +88,8 @@ package_systemd-legacy() {
   depends=('acl' 'bash' 'dbus' 'glib2' 'iptables' 'kbd' 'kmod' 'hwids' 'libcap'
            'libgcrypt' 'libsystemd' 'libidn' 'lz4' 'pam' 'libelf' 'libseccomp'
            'util-linux' 'xz')
-  provides=('nss-myhostname' "systemd-tools=$pkgver" "udev=$pkgver")
-  replaces=('nss-myhostname' 'systemd-tools' 'udev')
+  provides=('systemd' 'nss-myhostname' "systemd-tools=$pkgver" "udev=$pkgver")
+  replaces=('systemd' 'nss-myhostname' 'systemd-tools' 'udev')
   conflicts=('systemd' 'nss-myhostname' 'systemd-tools' 'udev')
   optdepends=('cryptsetup: required for encrypted block devices'
               'libmicrohttpd: remote journald capabilities'

@@ -17,11 +17,18 @@ pkgdesc='Provides APIs for Wayland'
 depends=('qt5-base' 'libxcomposite' 'libxkbcommon')
 makedepends=()
 groups=('qt' 'qt5')
-source=(${_pkgname}::git://code.qt.io/qt/qtwayland.git#tag=v${_qtver})
-md5sums=('SKIP')
+source=(${_pkgname}::git://code.qt.io/qt/qtwayland.git#tag=v${_qtver}
+	'pkgconfig_hybris-egl-platform.patch')
+md5sums=('SKIP'
+	 '9b29fe70bae05930a99ee50336843188')
 
 prepare() {
   mkdir -p build
+
+  cd ${_pkgname}
+
+  # hybris pkgconfig
+  git apply "${srcdir}/pkgconfig_hybris-egl-platform.patch"
 }
 
 build() {

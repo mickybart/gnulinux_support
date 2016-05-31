@@ -12,7 +12,7 @@ depends=()
 options=('!strip')
 source=(hybris-linux.tgz)
 md5sums=('SKIP')
-product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
+_product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
 
 build() {
   cd "${srcdir}"
@@ -23,7 +23,7 @@ package() {
   cd "${srcdir}"
 
   install -d ${pkgdir}/opt/android/boot
-  install -m 644 ./${product_out}/boot.img ${pkgdir}/opt/android/boot/
+  install -m 644 ./${_product_out}/boot.img ${pkgdir}/opt/android/boot/
 
   # fix kernel error due to v4l_id
   install -d "${pkgdir}/etc/udev/rules.d/"
