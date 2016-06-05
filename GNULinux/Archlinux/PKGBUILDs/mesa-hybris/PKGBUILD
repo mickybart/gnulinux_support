@@ -1,4 +1,7 @@
-# $Id$
+# Maintainer: Michael Serpieri <mickybart@pygoscelis.org>
+
+# based on mesa package from archlinuxarm (without libva-mesa-driver):
+
 # Maintainer: Jan de Groot <jgc@archlinux.org>
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
@@ -7,6 +10,7 @@
 #  - Removed libgles, libegl and khrplatform-devel from conflicts for marvell-libgfx compatibility.
 #  - Moved .pc files to mesa-libgl that reference libraries in mesa-libgl
 #  - Build vc4 gallium driver for v6/v7
+#  - Keep prepare function for older llvm (remove when llvm is fixed)
 
 # ALARM: Michael Serpieri <mickybart@pygoscelis.org>
 #  - Move libwayland-egl library to a new package mesa-wayland-egl
@@ -14,9 +18,9 @@
 
 pkgbase=mesa-hybris
 _pkgbase=mesa
-pkgname=('mesa-hybris' 'mesa-libgl' 'mesa-wayland-egl' 'libva-mesa-driver')
-pkgver=11.2.1
-pkgrel=1
+pkgname=('mesa-hybris' 'mesa-hybris-libgl' 'mesa-hybris-wayland-egl')
+pkgver=11.2.2
+pkgrel=1.1
 arch=('i686' 'x86_64' 'armv7h')
 makedepends=('python2-mako' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'dri3proto' 'presentproto'
              'libxshmfence' 'libxxf86vm' 'libxdamage' 'libvdpau' 'libva' 'wayland' 'elfutils' 'llvm'
@@ -26,7 +30,7 @@ license=('custom')
 options=('!libtool')
 source=(ftp://ftp.freedesktop.org/pub/mesa/${pkgver}/mesa-${pkgver}.tar.xz{,.sig}
         LICENSE)
-sha256sums=('a65207e9ae5c5f1c29f863c6a2cc98a7ab99762a24b82a248337f0ea9cfce01b'
+sha256sums=('40e148812388ec7c6d7b6657d5a16e2e8dabba8b97ddfceea5197947647bdfb4'
             'SKIP'
             '7fdc119cf53c8ca65396ea73f6d10af641ba41ea1dd2bd44a824726e01c8b3f2')
 validpgpkeys=('8703B6700E7EE06D7A39B8D6EDAE37B02CEB490D') # Emil Velikov <emil.l.velikov@gmail.com>
@@ -73,17 +77,6 @@ build() {
   make DESTDIR=${srcdir}/fakeinstall install
 }
 
-package_libva-mesa-driver() {
-  pkgdesc="VA-API implementation for gallium"
-  depends=('libdrm' 'libx11' 'llvm-libs' 'expat' 'elfutils')
-
-  install -m755 -d ${pkgdir}/usr/lib
-  cp -rv ${srcdir}/fakeinstall/usr/lib/dri ${pkgdir}/usr/lib
-   
-  install -m755 -d "${pkgdir}/usr/share/licenses/libva-mesa-driver"
-  install -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/libva-mesa-driver/"
-}
-               
 package_mesa-hybris() {
   pkgdesc="an open-source implementation of the OpenGL specification"
   depends=('libdrm' 'wayland' 'libxxf86vm' 'libxdamage' 'libxshmfence' 'systemd' 'elfutils' 
@@ -126,9 +119,9 @@ package_mesa-hybris() {
   install -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/mesa/"
 }
 
-package_mesa-libgl() {
+package_mesa-hybris-libgl() {
   pkgdesc="Mesa 3-D graphics library"
-  depends=('mesa-hybris' 'mesa-wayland-egl')
+  depends=('mesa-hybris' 'mesa-hybris-wayland-egl')
   provides=('libgl')
   replaces=('libgl')
   conflicts=('libgl')
@@ -160,7 +153,7 @@ package_mesa-libgl() {
   install -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/mesa-libgl/"
 }
 
-package_mesa-wayland-egl() {
+package_mesa-hybris-wayland-egl() {
   pkgdesc="Mesa 3-D wayland library"
   depends=('mesa-hybris')
   provides=('libwayland-egl')

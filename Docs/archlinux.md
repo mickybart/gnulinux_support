@@ -111,8 +111,8 @@ cd ..
 #compile it only if you need it. Check PKGBUILD of hybris-device-?-?
 cd systemd-legacy
 makepkg -s
-sudo pacman -U --asdeps {libsystemd,systemd-legacy}-2*.pkg.tar.xz
-sudo pacman -U systemd-sysvcompat*.pkg.tar.xz
+sudo pacman -U --asdeps {systemd-legacy-libsystemd,systemd-legacy}-2*.pkg.tar.xz
+sudo pacman -U systemd-legacy-sysvcompat*.pkg.tar.xz
 cd ..
 
 #hybris-device-?-? that you need

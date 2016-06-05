@@ -1,3 +1,7 @@
+# Maintainer: Michael Serpieri <mickybart@pygoscelis.org>
+
+# Based on systemd package from archlinuxarm :
+
 # Maintainer: Dave Reisner <dreisner@archlinux.org>
 # Maintainer: Tom Gundersen <teg@jklm.no>
 
@@ -10,7 +14,7 @@
 
 pkgbase=systemd-legacy
 _pkgbase=systemd
-pkgname=('systemd-legacy' 'libsystemd' 'systemd-sysvcompat')
+pkgname=('systemd-legacy' 'systemd-legacy-libsystemd' 'systemd-legacy-sysvcompat')
 pkgver=229
 pkgrel=3
 arch=('i686' 'x86_64' 'armv7h')
@@ -86,7 +90,7 @@ package_systemd-legacy() {
   pkgdesc="system and service manager"
   license=('GPL2' 'LGPL2.1')
   depends=('acl' 'bash' 'dbus' 'glib2' 'iptables' 'kbd' 'kmod' 'hwids' 'libcap'
-           'libgcrypt' 'libsystemd' 'libidn' 'lz4' 'pam' 'libelf' 'libseccomp'
+           'libgcrypt' 'systemd-legacy-libsystemd' 'libidn' 'lz4' 'pam' 'libelf' 'libseccomp'
            'util-linux' 'xz')
   provides=('systemd' 'nss-myhostname' "systemd-tools=$pkgver" "udev=$pkgver")
   replaces=('systemd' 'nss-myhostname' 'systemd-tools' 'udev')
@@ -168,21 +172,24 @@ package_systemd-legacy() {
   install -Dm644 "$srcdir/splash-arch.bmp" "$pkgdir"/usr/share/systemd/bootctl/splash-arch.bmp
 }
 
-package_libsystemd() {
+package_systemd-legacy-libsystemd() {
   pkgdesc="systemd client libraries"
   depends=('glibc' 'libcap' 'libgcrypt' 'lz4' 'xz')
   license=('GPL2')
-  provides=('libsystemd.so' 'libudev.so')
+  provides=('libsystemd' 'libsystemd.so' 'libudev.so')
+  replaces=('libsystemd')
+  conflicts=('libsystemd')
 
   make -C "$_pkgbase" DESTDIR="$pkgdir" install-libLTLIBRARIES
 }
 
-package_systemd-sysvcompat() {
+package_systemd-legacy-sysvcompat() {
   pkgdesc="sysvinit compat for systemd"
   license=('GPL2')
   groups=('base')
-  conflicts=('sysvinit')
-  depends=('systemd')
+  conflicts=('sysvinit' 'systemd-sysvcompat')
+  replaces=('systemd-sysvcompat')
+  depends=('systemd-legacy')
 
   install -dm755 "$pkgdir"/usr/share/man/man8
   cp -d --no-preserve=ownership,timestamp \
