@@ -9,7 +9,7 @@
 
 pkgname=hybris-device-sony-nozomi
 pkgver=5.1.1_30
-pkgrel=1
+pkgrel=2
 pkgdesc="hybris - Android for Sony Xperia S (nozomi)"
 arch=('armv7h')
 url="http://forum.xda-developers.com/xperia-s/s-development/rom-naosprom-xperia-s-t2958516"
@@ -24,6 +24,7 @@ source=(hybris-device.install
 	hybris-device.install.template
         default.hybris-device
 	profile.hybris-device.sh
+	602-nozomi-extra.rules
 	hybris-device.tgz)
 md5sums=('SKIP'
 	 'b128af77ca5d2e1c8eeda192baa7b298'
@@ -31,6 +32,7 @@ md5sums=('SKIP'
 	 '69e168c70e61e19fbf86217fa691c084'
 	 '96a74b7fef30065e22906e4a63fe91fa'
 	 '75e4bba978030127135ac0bff97960a1'
+	 '0a8acbb754b21a3d66c3c985614d9e79'
 	 'SKIP')
 _product_out=out/target/product/$(echo $pkgname | cut -d'-' -f4)
 
@@ -111,7 +113,7 @@ package() {
   #       to fix generate-android-udev-rules.sh script
 
   install -d "${pkgdir}/usr/lib/udev/rules.d/"
-  cp *.rules "${pkgdir}/usr/lib/udev/rules.d/"
+  cp -L *.rules "${pkgdir}/usr/lib/udev/rules.d/"
 
   # Configuration file
   #
