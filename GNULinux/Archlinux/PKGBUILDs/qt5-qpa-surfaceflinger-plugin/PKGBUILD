@@ -3,7 +3,7 @@
 pkgname=qt5-qpa-surfaceflinger-plugin
 conflicts=('qt')
 _pkgname=qt5-qpa-surfaceflinger-plugin
-_qtver=5.6.0
+_qtver=5.7.0
 pkgver=${_qtver/-/}
 pkgrel=1
 arch=('i686' 'x86_64' 'armv7h')
