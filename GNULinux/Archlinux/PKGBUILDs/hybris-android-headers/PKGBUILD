@@ -12,11 +12,17 @@ license=('custom')
 depends=()
 options=('!strip')
 install=''
-source=(android-headers-${pkgver}.tgz)
-md5sums=('802d9e43a557be1ce13ccbee5f253d53')
+source=('gls-common::git+https://github.com/mickybart/gnulinux_support-common')
+md5sums=('SKIP')
+
+prepare() {
+  mkdir -p ${srcdir}/headers
+  cd ${srcdir}/headers/
+  bsdtar -xpf ${srcdir}/gls-common/aur-blob/${pkgname}/android-headers-${pkgver}.tgz
+}
 
 package() {
-  cd "${srcdir}"
+  cd "${srcdir}/headers"
 
   install -d "${pkgdir}/opt/android"
 
