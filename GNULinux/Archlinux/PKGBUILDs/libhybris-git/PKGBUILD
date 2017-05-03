@@ -39,7 +39,7 @@ build() {
 
 package_libhybris-git() {
   pkgdesc="hybris allows to use bionic-based HW adaptations in glibc systems"
-  depends=('hybris-device')
+  depends=('hybris-android-headers')
   provides=('libhybris')
   conflicts=('libhybris')
 

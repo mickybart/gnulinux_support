@@ -39,7 +39,7 @@ build() {
 
 package_libhybris-ext-git() {
   pkgdesc="hybris allows to use bionic-based HW adaptations in glibc systems (ext version)"
-  depends=('hybris-device')
+  depends=('hybris-android-headers')
   provides=('libhybris')
   conflicts=('libhybris')
 

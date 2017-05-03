@@ -14,7 +14,9 @@ pkgdesc="hybris - Android for Sony Xperia S (nozomi)"
 arch=('armv7h')
 url="http://forum.xda-developers.com/xperia-s/s-development/rom-naosprom-xperia-s-t2958516"
 license=('custom')
-provides=('hybris-device')
+provides=('hybris-device' 'hybris-android-headers')
+replaces=('hybris-android-headers')
+conflicts=('hybris-android-headers')
 depends=('schroot-hybris' 'systemd-legacy' 'hybris-linux-sony-nozomi')
 options=('!strip')
 install='hybris-device.install'
@@ -100,11 +102,9 @@ package() {
   # NOTE: needed to compil libhybris-git, qpa-qt-hwcomposer-plugin, ...
 
   cd "$srcdir/${_product_out}/headers"
-  make DESTDIR="$pkgdir/" PREFIX=/opt/android INCLUDEDIR=/opt/android/include install
+  make DESTDIR="$pkgdir/" PREFIX=/opt/android INCLUDEDIR=/opt/android/include PKGCONFIGDIR=/usr/lib/pkgconfig install
   cd "${srcdir}"
-  install -d "${pkgdir}/usr/lib/pkgconfig"
-  mv "${pkgdir}/opt/android/include/android-headers.pc" "${pkgdir}/usr/lib/pkgconfig/"
-  sed -i 's|Cflags:.*|Cflags: -I/opt/android/include|' "${pkgdir}/usr/lib/pkgconfig/android-headers.pc"
+  sed -i 's|Cflags:.*|Cflags: -I${includedir}|' "${pkgdir}/usr/lib/pkgconfig/android-headers.pc"
 
   # udev rules for the device
   #
