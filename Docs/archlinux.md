@@ -1,20 +1,20 @@
-#Archlinux ARM
+# Archlinux ARM
 
 [TOC]
 
-##OTA
+## OTA
 Flashing procedure can be specific per device so please refer to your ROM maintainer to flash your archlinux ota zip file.
 
 A general flashing method is described in the `main.md` document if needed.
 
-##Installation
-###Quick overview
+## Installation
+### Quick overview
 Archlinux for Android devices follow the spirit of Archlinux.
 So once flashed, your device will reboot on a black screen and your system will be minimal without any specific packages installed about Android on it except `hybris-usb` and `dhcp`.
 
 Those 2 packages are part of the OTA zip file to permit you to access your device with an usb cable.
 
-###Connect your device
+### Connect your device
 - Plug your device with the USB cable to your computer
 - Check that an IP on the subnet 10.15.19.0/24 is set on your usb/ethernet interface (should be 10.15.19.100 or more)
 - Connect to your device with `ssh alarm@10.15.19.82` *(passwd: alarm)*
@@ -22,7 +22,7 @@ Those 2 packages are part of the OTA zip file to permit you to access your devic
 
 **Don't forget to change root and alarm password**
 
-###Internet access
+### Internet access
 Your device will need an internet access* (that can be done offline too but this solution is not documented)*.
 To do that, we will [share the Internet connection](https://wiki.archlinux.org/index.php/Internet_sharing) of your computer. Please refer to your OS provider to apply the right procedure.
 
@@ -41,7 +41,7 @@ Once done you can check that everything is fine by doing :
 ping -4 www.archlinux.org
 ```
 
-###Packages for base system
+### Packages for base system
 ```
 pacman -Syu
 pacman -S sudo base-devel
@@ -75,10 +75,10 @@ yaourt -S rsync git
 
 To speed up compilation with distcc for ARM, please read archlinuxarm [documentation](https://archlinuxarm.org/wiki/Distcc_Cross-Compiling)
 
-###Packages for Android device, Qt/Kwin, ...
+### Packages for Android device, Qt/Kwin, ...
 **IMPORTANT: do not install packages built for another device. Some of them are really specific to your device and Android version (eg: libhybris, hybris-linux, hybris-device, ...). Please never install a kernel not adapted for your device (hybris-linux) !**
 
-####Manual
+#### Manual
 **to run with alarm user**
 
 Get PKGBUILDs from gnulinux_support to your device. eg:
@@ -176,7 +176,7 @@ sudo pacman -U --asdeps hybris-ready-bootanim-0.*.pkg.tar.xz
 cd ..
 ```
 
-####AUR (yaourt)
+#### AUR (yaourt)
 **to run with alarm user**
 ```
 ####
@@ -198,19 +198,19 @@ yaourt -S hybris-ready-plasma-support-meta
 yaourt -S hybris-ready-bootanim
 ```
 
-####Binaries
+#### Binaries
 For now, binaries package are not released in a repository but if your device maintainer provides some binaries you can download and install them.
 
-###Reboot
+### Reboot
 ```
 sudo systemctl isolate reboot
 ```
 
-###Tests
-####Kernel
+### Tests
+#### Kernel
 Check if everything is fine with `dmesg`
 
-####Android boot
+#### Android boot
 Check Android logs (only if you have started hybris-ready.service) :
 ```
 sdroid
@@ -219,7 +219,7 @@ logcat
 <ctrl+d>
 ```
 
-####hybris
+#### hybris
 ```
 sudo -i
 cd /opt/android/hybris/bin
@@ -233,7 +233,7 @@ cd /opt/android/hybris/bin
 ./test_...
 ```
 
-####QML
+#### QML
 Display a qml application (use OpenGL ES) :
 ```
 git clone https://github.com/mickybart/hybris-ready-bootanim
@@ -242,7 +242,7 @@ qmlscene-qt5 archlinux.qml
 <ctrl+c>
 ```
 
-####Kwin
+#### Kwin
 Start a kwin wayland session with an application :
 ```
 # install plasma-meta, kcalc... or alternative to have everything needed for this test.
@@ -261,12 +261,12 @@ kwin_wayland --libinput --xwayland /usr/bin/kcalc
 startplasmacompositor
 ```
 
-##And now ?
+## And now ?
 Just install what you needs as on any GNU/Linux system !
 We just build solid base to work on but the best is to come ! :)
 
-##TODO - Developers section
-###hybris-kernel
+## TODO - Developers section
+### hybris-kernel
 - [ ] 1. Integrate a flashing procedure during package update (custom per device) + *see if we can protect customer from itself to flash a wrong package*
 - [ ] 2. Integrate a solution to create the boot.img + size limit check
 - [ ] 3. kernel source compilation (+ prebuild gcc from AOSP) ??
@@ -275,7 +275,7 @@ With implementation of the first 2 points, it will be possible to create boot.im
 
 For point 3, defconfig file should be part of hybris-kernel package. This point is not mandatory and we can works with a prebuilt kernel from AOSP. As every devices have a specific kernel that maybe doesn't make a lot of interest to do it.
 
-###mkinitrd
+### mkinitrd
 *(dependency to point 1 and 2 of hybris-kernel)*
 Use mkinitrd solution to generate an initramfs with specific hooks (crypto, snapshot, recovery, ...)
 
@@ -287,19 +287,16 @@ The important part is to create a minimal graphical interface that will permit u
 
 This can be something like a new recovery solution oriented for GNU/Linux needs. Maybe based on TWRP or from scratch with Qt/QML ? (code size constraints are low if we use some space under /system that is uncrypted on Android devices. So /data will be able to be fully crypted - included binaries)
 
-###kwin/libinput
-- [ ] fix issue with libinput that doesn't seems to be initilized by kwin_wayland (`kwin_wayland --libinput --xwayland`)
-
-###sddm
+### sddm
 sddm is using QML/Qt and so it is a good fit to have a display manager.
 - [ ] Check compatibility with Qt hwcomposer/surfacefinger backend or study a wayland support in addition of Xorg
 - [ ] Convergence : theme for portrait mode
 - [ ] Virtual keyboard
 
-###Plasma-Mobile / Ofono / ...
+### Plasma-Mobile / Ofono / ...
 - [ ] Provide a mobile phone experience
 
-###Website for archlinux phone
+### Website for archlinux phone
 
 - [ ] Discuss with archlinuxarm team to check if they can share some space (wiki/repositories/infra) for this project in their own website.
 - [ ] Documentation into the archlinux wiki (mainly a rewrite of this one)

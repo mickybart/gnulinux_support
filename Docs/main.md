@@ -1,4 +1,4 @@
-#GNU/Linux for Android devices
+# GNU/Linux for Android devices
 
 [TOC]
 
@@ -63,7 +63,7 @@ Android init is fully integrated as a service controlled by systemd. cgroups are
 Due to old kernel (3.4) used on a lot of Android devices, we are using a modified systemd version that bring back the support to load firmware from userspace by systemd-udev request. This version is not mandatory and devices with recent kernel can use the upstream systemd.
 
 ## Android
-#####GNULINUX\_SUPPORT
+##### GNULINUX\_SUPPORT
 For remember, we need a modified Android version. To do that we have introduced GNULINUX_SUPPORT as a define for C/C++ and as a boolean variable for Makefiles.
 
 ```
@@ -89,7 +89,7 @@ So GNULINUX_SUPPORT permit to have a common AOSP code to build an Android system
 
 That will permit custom ROM based on AOSP like CyanogenMod, Omnirom and others to integrate those patches upstream. So devices porters will be able to focus only on the device tree to adapt it for GNU/Linux.
 
-#####AOSP 5.1.1
+##### AOSP 5.1.1
 We have created a [local_manifest.xml](https://github.com/mickybart/android_manifest/tree/gnulinux-support-5.1) that can be used to add GNULINUX_SUPPORT for AOSP 5.1.1.
 
 Please to find modified repositories:
@@ -98,13 +98,13 @@ Please to find modified repositories:
 - [frameworks/native](https://github.com/mickybart/android_frameworks_native/tree/gnulinux-support-5.1)
 - [system/core](https://github.com/mickybart/android_system_core/tree/gnulinux-support-5.1)
 
-#####AOSP 6.0
+##### AOSP 6.0
 TODO
 
-#####CyanogenMod 12.1 / 13.0
+##### CyanogenMod 12.1 / 13.0
 Nothing is ported yet because we have no device with CyanogenMod (CM) but we hope that patches done for AOSP will be ported upstream to CM in the future.
 
-#####Android 4.x
+##### Android 4.x
 We are not supporting any patches for Android 4.x mainly because this version is not supported anymore by Google.
 That doesn't mean that it is not possible to use it. Of course the device hardware need to be enough powerful to support a GNU/Linux system.
 We will not define what powerful means because it depends of the distribution used, if you want the graphical stack, etc. For exemple if you want a GNU/Linux system with console only to be able to send SMS, share 3G, etc... an old device can fit :)
@@ -316,5 +316,5 @@ Some of them are already be pushed but not necessary approved/committed yet.
 
 We will update this section with our progress on this topic.
 
-##Authors
+## Authors
 Michaël Serpieri <mickybart@pygoscelis.org>
