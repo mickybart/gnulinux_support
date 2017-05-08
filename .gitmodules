@@ -1,3 +1,6 @@
 [submodule "GNULinux/kernel-check"]
 	path = GNULinux/kernel-check
 	url = https://github.com/mer-hybris/mer-kernel-check
+[submodule "Android/android_hybris/libhybris"]
+	path = Android/android_hybris/libhybris
+	url = https://github.com/mickybart/libhybris_ext
